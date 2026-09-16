@@ -1,4 +1,4 @@
-name: Migrate and deploy Shangwai Cup 3
+name: Deploy Shangwai Cup 3
 
 on:
   push:
@@ -6,13 +6,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -21,31 +21,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout standalone repository
+      - name: Checkout repository
         uses: actions/checkout@v6
-
-      - name: Migrate source from archived commit
-        shell: bash
-        run: |
-          set -euo pipefail
-          BASE="https://raw.githubusercontent.com/OneYaYa/OneYaYa.github.io/59c9baa6c73d16a6c3e003e656ac2ecccd383607/shangwai-cup-3"
-          files=(README.md app.js data.js favicon.svg index.html results.json rules-source.js scoring.js styles.css tests.cjs)
-          for file in "${files[@]}"; do
-            curl --fail --silent --show-error --location "$BASE/$file" --output "$file"
-          done
-          touch .nojekyll
-
-      - name: Persist migrated source in standalone repository
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md app.js data.js favicon.svg index.html results.json rules-source.js scoring.js styles.css tests.cjs .nojekyll
-          if ! git diff --cached --quiet; then
-            git commit -m "Migrate Shangwai Cup site into standalone repository"
-            git push origin HEAD:main
-          fi
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
