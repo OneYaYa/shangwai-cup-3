@@ -7,7 +7,7 @@ try{const saved=localStorage.getItem(KEY);if(saved)local=S.validate(JSON.parse(s
 function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',4200);}
 function persist(){local.updatedAt=new Date().toISOString();try{localStorage.setItem(KEY,JSON.stringify(local));localStorage.setItem(KEY+'-preview','1');storageMessage='已保存到此浏览器 · '+new Date().toLocaleTimeString('zh-CN');}catch(e){storageMessage='浏览器未能保存，请导出 JSON 备份。';}const x=$('.status-save');if(x)x.textContent=storageMessage;}
 function player(id){return C.players.find(x=>x.id===id);}
-function pAvatar(p){const y=[222,276,331,386,441,495,551,606,660,715][p.row];return `<svg class="avatar" role="img" aria-label="${esc(p.name)}头像" viewBox="134 ${y} 49 49"><image href="assets/schedule.png" width="625" height="790"/></svg>`;}
+function pAvatar(p){return `<img class="avatar" src="assets/avatars/${esc(p.id)}.jpg" alt="${esc(p.name)}头像" width="50" height="50" decoding="async">`;}
 function pIdentity(p){return `<div class="player">${pAvatar(p)}<div><strong>${esc(p.name)} ${p.pressure?'<span class="pill purple">抗压位</span>':''}</strong><small>${p.difficulty} · ${esc(p.squad)}分队</small></div></div>`;}
 const isWorkbench=document.body.dataset.page==='workbench';
 let rulesTrack='fun';

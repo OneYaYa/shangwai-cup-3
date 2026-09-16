@@ -21,8 +21,8 @@ const {chromium}=require('playwright');
  await work.locator('#player-select').selectOption('cheng');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
  await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='2,500');
  console.log('PASS merged schedule, rule tabs, entertainment/competitive cross-tab updates, team first-clear deduplication');
- // Verify real rendered avatar region against the exact original screenshot pixels via SVG viewBox.
- assert.equal(await page.locator('[data-result-team="teddy"] .team-members .avatar').first().getAttribute('viewBox'),'134 331 49 49');
+ // Verify independent avatar file and image loading.
+ assert.equal(await page.locator('[data-result-team="teddy"] .team-members .avatar').first().getAttribute('src'),'assets/avatars/mumu.jpg');assert(await page.locator('img.avatar').evaluateAll(images=>images.every(i=>i.complete&&i.naturalWidth>0)));
  if(process.env.QA_DIR){await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:process.env.QA_DIR+'/event-desktop.png',fullPage:true});await work.screenshot({path:process.env.QA_DIR+'/workbench-desktop.png',fullPage:true});}
  await page.setViewportSize({width:390,height:844});await page.goto(url+'/#teams');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));if(process.env.QA_DIR){await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:process.env.QA_DIR+'/event-mobile.png',fullPage:true});}
  await work.setViewportSize({width:390,height:844});assert(await work.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
