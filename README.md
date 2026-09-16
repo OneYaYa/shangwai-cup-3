@@ -42,7 +42,7 @@
 
 ## 文件
 
-`app.js` 页面与交互；`scoring.js` 纯计分逻辑；`data.js` 名单与规则数据；`styles.css` 响应式样式；`assets/poster.png` 中英双语海报；`rules/` 原始规则。海报以用户提供的赛事海报为风格参考，通过内置 imagegen 生成深青色树海背景、银白标题的无人物版本。`assets/schedule.png` 保留用户提供的原始赛程截图，供十名选手头像定位及原图查看。
+`app.js` 页面与交互；`scoring.js` 纯计分逻辑；`data.js` 名单与规则数据；`styles.css` 响应式样式；`assets/poster-multilingual.png` 多语种主页海报；`rules/` 原始规则。主页海报以赛事海报与用户提供的游戏官方 Logo 为风格参考，通过内置 imagegen 融合银白标题、红色纹样及英、法、西、日语主题设计译文（非官方译名）。竞技海报在页面中仅展示队名 VS 队名横幅，点击可查看原图。`assets/schedule.png` 保留用户提供的原始赛程截图，供十名选手头像定位及原图查看。
 
 ## 验证
 

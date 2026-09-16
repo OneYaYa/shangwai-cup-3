@@ -18,3 +18,6 @@ h1,h2,h3{font-family:inherit}.topbar{height:72px;position:sticky;top:0;z-index:2
 img.avatar{object-fit:cover;object-position:center}
 
 .competitive-poster{display:block;margin-bottom:24px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#081817}.competitive-poster img{display:block;width:100%;height:auto}
+
+/* Keep only the team-name versus strip in the page layout. */
+.competitive-poster{aspect-ratio:6.5/1}.competitive-poster img{width:100%;height:100%;object-fit:cover;object-position:center 65%}
