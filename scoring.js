@@ -2,7 +2,7 @@
 (function(root){
 const C=root.CUP;
 const number=(x)=>Number.isFinite(Number(x))?Number(x):0;
-function fresh(p){return {base:'',withdrawn:0,swaddles:0,parts:0,squad:({多边贸易:'trade',术特:'destruction',狙医:'ranged',近锋:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
+function fresh(p){return {base:'',withdrawn:0,swaddles:0,parts:0,squad:({多边贸易:'trade',破坏战术分队:'destruction',远程战术分队:'ranged',突击战术分队:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
 function bossLines(r,key){
  const out=[],add=(label,value)=>out.push({label,value});
  if(key==='pain'&&r.pain){add('痛苦将息',200);if(r.pain_perfect)add('痛苦将息 · 无漏',100);if(r.pain_hunt)add('痛苦将息 · 全追猎状态',200);}

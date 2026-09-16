@@ -15,7 +15,7 @@ const {chromium}=require('playwright');
  await page.locator('[data-rules-track="competitive"]').click();assert.equal(await page.locator('a[download]').count(),2);await page.locator('[data-rules-track="fun"]').click();
  const work=await context.newPage();await work.goto(url+'/workbench.html#fun');await work.waitForSelector('#f-base');await work.locator('#f-base').fill('1000');await work.locator('[name="hunt_fang"]').check();
  await page.locator('[data-day="2026-09-19"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="lan"] .match-score strong').textContent==='820');
- await work.goto(url+'/workbench.html#competitive');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
+ await work.goto(url+'/workbench.html#competitive');assert.equal(await work.locator('[name="sand"]').count(),1);assert.equal(await work.locator('[name="offerings"]').count(),1);assert.deepEqual(await work.locator('#calculator-form .step').allTextContents(),['01','02','03','04','05','06','07','08']);assert.equal(await work.locator('#f-squad').inputValue(),'destruction');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
  await page.locator('[data-day="2026-09-20"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="mumu"] .match-score strong').textContent==='1,000');
  await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='1,300');
  await work.locator('#f-withdrawn').fill('70');await work.locator('#f-swaddles').fill('1');
