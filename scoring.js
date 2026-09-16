@@ -3,6 +3,16 @@
 const C=root.CUP;
 const number=(x)=>Number.isFinite(Number(x))?Number(x):0;
 function fresh(p){return {base:'',parts:0,squad:({多边贸易:'trade',术特:'destruction',狙医:'ranged',近锋:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
+function bossLines(r,key){
+ const out=[],add=(label,value)=>out.push({label,value});
+ if(key==='pain'&&r.pain){add('痛苦将息',200);if(r.pain_perfect)add('痛苦将息 · 无漏',100);if(r.pain_hunt)add('痛苦将息 · 全追猎状态',200);}
+ if(key==='chaos'&&r.chaos){add('混沌源阶理论',250);if(r.chaos_perfect)add('混沌源阶理论 · 无漏',100);}
+ if(key==='disease'){
+  if(r.disease){add('畸症',100);if(r.disease_perfect)add('畸症 · 无漏',100);if(r.disease_hunt)add('畸症 · 全追猎状态（替代追猎3）',150);else if(r.disease_trigger)add('畸症 · 追猎3',75);}
+  if(r.disease_kill)add('击杀症结之核',200);
+ }
+ return out;
+}
 function calculate(p,r={},context={}){
  const lines=[],warnings=[];
  let raw=number(r.base),extra=0,level=0,penalty=number(r.penalty),multiplier=1;
@@ -34,17 +44,18 @@ function calculate(p,r={},context={}){
    if(r.mechanic==='ban'){add('禁用机械师',400,'base');multiplier+=.05;}
    if(r.mechanic==='outside')add('机械师 · 仅局外收益',100,'base');
    if(r.mechanic==='inside')add('机械师 · 仅局内收益',200,'base');
-   if(r.sand&&r.completed)add('沙盘 α + β',150);
-   if(r.offerings&&r.completed)add('三供无削',300);
+   if(r.sand&&r.completed)add('沙盘 α + β',150,'base');
+   if(r.offerings&&r.completed)add('三供无削',300,'base');
    if((r.sand||r.offerings)&&!r.completed)warnings.push('藏品规则分要求通关，当前未计入沙盘 / 三供无削。');
    for(const [key,name,,score] of C.hunts)if(r['hunt_'+key])claim('hunt_'+key,name+' · 无漏',score);
-   if(r.pain){add('痛苦将息',200);if(r.pain_perfect)add('痛苦将息 · 无漏',100);if(r.pain_hunt)add('痛苦将息 · 全追猎状态',200);}
-   if(r.chaos){add('混沌源阶理论',250);if(r.chaos_perfect)add('混沌源阶理论 · 无漏',100);}
-   if(r.disease){add('畸症',100);if(r.disease_perfect)add('畸症 · 无漏',100);if(r.disease_hunt)add('畸症 · 全追猎状态（替代追猎3）',150);else if(r.disease_trigger)add('畸症 · 追猎3',75);}
-   if(r.disease_kill)add('击杀症结之核',200);
+   for(const key of ['pain','chaos','disease']){
+    const reward=bossLines(r,key),owner=context.bossOwners?.[p.team+':'+key];
+    if(reward.length&&owner&&owner!==p.id)warnings.push(`${reward[0].label}：团队采用 ${C.players.find(x=>x.id===owner)?.name||owner} 的最高完整奖励，本人此项不重复计入。`);
+    else reward.forEach(l=>add(l.label,l.value));
+   }
    for(const s of C.specials){const n=number(r['special_'+s.key]);if(s.levels[n])claim('special_'+s.key,s.name+' · '+n+'层',s.levels[n]);}
    if(r.coexist){add('紧急同域共存',70);if(r.coexist_black)add('同域共存 · 黑流地脉',70);if(r.coexist_hunt)add('同域共存 · 全追猎状态',50);if(r.coexist_non6)add('同域共存 · 非6层',20);if(r.coexist_black&&r.coexist_hunt)add('黑流地脉 × 全追猎额外奖励',150);}
-   if(r.box)add('箱中猎影',70,'base');
+   if(r.box)add('箱中猎影',70);
    if(r.wheel)add('复得之轮限制奖励',200,'base');
    if(r.belly)add('果腹限制奖励',200,'base');
    if(r.vine)add('板藤限制奖励',200,'base');
@@ -58,19 +69,22 @@ function calculate(p,r={},context={}){
  const baseSubtotal=raw+extra-parts;
  // Settlement and team-level contribution are disjoint, rounded ledger entries.
  const settlement=round(p.track==='fun'?raw*.8+level-penalty+manual:baseSubtotal*multiplier-penalty+manual);
- const teamLevel=p.track==='competitive'?round(level*multiplier):0;
- const total=round(settlement+teamLevel);
+ const teamLevel=p.track==='competitive'?round(level):0;
+ const firstBonus=p.track==='competitive'?['pain','chaos'].filter(key=>context.firstOwners?.[p.team+':'+key]===p.id).reduce((sum,key)=>{lines.push({label:(key==='pain'?'痛苦将息':'混沌源阶理论')+' · 队内首次通关',value:100,kind:'first'});return sum+100;},0):0;
+ const teamContribution=teamLevel+firstBonus;
+ const total=round(settlement+teamContribution);
  const isEntered=r.base!==''&&r.base!==null&&r.base!==undefined;
- return {total,settlement,teamLevel,raw,extra,parts,level,multiplier:Math.round(multiplier*100)/100,penalty,manual,afterBonus,lines,warnings,entered:isEntered};
+ return {total,settlement,teamLevel,firstBonus,teamContribution,raw,extra,parts,level,multiplier:Math.round(multiplier*100)/100,penalty,manual,afterBonus,lines,warnings,entered:isEntered};
 }
 function workbook(records={},policy=C.defaultPolicy){
- const owners={},firstOwners={};
- for(const p of C.players){const r=records[p.id];if(p.track!=='competitive'||!r||r.base===''||r.base===undefined)continue;
+ const owners={},firstOwners={},bossOwners={},bossBest={};
+ for(const p of C.players){const r=records[p.id];if(p.track!=='competitive'||!r||r.base===''||r.base===undefined||r.base===null)continue;
   for(const [key] of C.hunts)if(r['hunt_'+key])owners[p.team+':hunt_'+key]??=p.id;
   for(const s of C.specials)if(s.levels[number(r['special_'+s.key])])owners[p.team+':special_'+s.key]??=p.id;
+  for(const key of ['pain','chaos','disease']){const total=bossLines(r,key).reduce((sum,l)=>sum+l.value,0),id=p.team+':'+key;if(total>(bossBest[id]||0)){bossBest[id]=total;bossOwners[id]=p.id;}}
   for(const key of ['pain','chaos'])if(r[key])firstOwners[p.team+':'+key]??=p.id;
  }
- const scores={};for(const p of C.players)scores[p.id]=calculate(p,records[p.id]||{}, {owners,firstOwners,policy});
+ const scores={};for(const p of C.players)scores[p.id]=calculate(p,records[p.id]||{}, {owners,firstOwners,bossOwners,policy});
  const teams=C.teams.map(t=>{
   const firstBonus=['pain','chaos'].filter(k=>firstOwners[t.id+':'+k]).length*100;
   let entered=t.members.filter(id=>scores[id].entered).length;
@@ -79,7 +93,7 @@ function workbook(records={},policy=C.defaultPolicy){
   const levelTotal=round(t.members.reduce((sum,id)=>sum+(scores[id].entered?scores[id].teamLevel:0),0));
   const teamBonus=round(levelTotal+firstBonus);
   return {...t,total:round(settlementTotal+teamBonus),settlementTotal,levelTotal,teamBonus,firstBonus,entered};
- });return {scores,teams,owners,firstOwners};
+ });return {scores,teams,owners,firstOwners,bossOwners};
 }
 function validate(data){
  if(!data||data.schemaVersion!==1||!data.records||typeof data.records!=='object'||Array.isArray(data.records))throw Error('不是上外杯 #3 的有效计分文件（需要 schemaVersion: 1 与 records）。');
