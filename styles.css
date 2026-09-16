@@ -16,3 +16,5 @@ h1,h2,h3{font-family:inherit}.topbar{height:72px;position:sticky;top:0;z-index:2
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
 img.avatar{object-fit:cover;object-position:center}
+
+.competitive-poster{display:block;margin-bottom:24px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#081817}.competitive-poster img{display:block;width:100%;height:auto}
