@@ -18,6 +18,8 @@ const {chromium}=require('playwright');
  await work.goto(url+'/workbench.html#competitive');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
  await page.locator('[data-day="2026-09-20"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="mumu"] .match-score strong').textContent==='1,000');
  await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='1,300');
+ await work.locator('#f-withdrawn').fill('70');await work.locator('#f-swaddles').fill('1');
+ await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] [data-deposit="remaining"]').textContent==='135');
  await work.locator('#player-select').selectOption('cheng');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
  await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='2,300');
  await work.locator('[name="pain_perfect"]').check();await work.locator('[name="pain_hunt"]').check();
@@ -43,7 +45,7 @@ const {chromium}=require('playwright');
  const fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'results.json')));let writes=0,published;
  await work.route('https://api.github.com/repos/OneYaYa/shangwai-cup-3/contents/results.json*',async route=>{if(route.request().method()==='GET')return route.fulfill({json:{sha:'test-sha',content:Buffer.from(JSON.stringify(fixture)).toString('base64')}});writes++;const body=route.request().postDataJSON();assert.equal(body.sha,'test-sha');assert.equal(body.branch,'main');published=JSON.parse(Buffer.from(body.content,'base64').toString());await route.fulfill({json:{commit:{sha:'mock'}}});});
  await work.locator('#publish-token').fill('mock-test-token');await work.locator('#publish-results').click();await work.waitForFunction(()=>document.querySelector('#publish-status').textContent.includes('已提交成绩'));
- assert.equal(writes,1);assert.equal(published.records.lan.base,1000);assert.equal(published.records.mumu.base,1000);assert.equal(await work.locator('#publish-token').inputValue(),'');assert(!(await work.evaluate(()=>JSON.stringify(localStorage))).includes('mock-test-token'));
+ assert.equal(writes,1);assert.equal(published.records.lan.base,1000);assert.equal(published.records.mumu.base,1000);assert.equal(published.records.mumu.withdrawn,70);assert.equal(published.records.mumu.swaddles,1);assert.equal(await work.locator('#publish-token').inputValue(),'');assert(!(await work.evaluate(()=>JSON.stringify(localStorage))).includes('mock-test-token'));
  // Repeated publication against changed remote must refuse to overwrite.
  await work.locator('#publish-token').fill('mock-test-token');await work.locator('#publish-results').click();await work.waitForFunction(()=>document.querySelector('#publish-status').textContent.includes('线上成绩已有更新'));assert.equal(writes,1);
  console.log('PASS publication payload, UTF-8, token clearing and remote conflict protection');

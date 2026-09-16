@@ -2,7 +2,7 @@
 (function(root){
 const C=root.CUP;
 const number=(x)=>Number.isFinite(Number(x))?Number(x):0;
-function fresh(p){return {base:'',parts:0,squad:({多边贸易:'trade',术特:'destruction',狙医:'ranged',近锋:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
+function fresh(p){return {base:'',withdrawn:0,swaddles:0,parts:0,squad:({多边贸易:'trade',术特:'destruction',狙医:'ranged',近锋:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
 function bossLines(r,key){
  const out=[],add=(label,value)=>out.push({label,value});
  if(key==='pain'&&r.pain){add('痛苦将息',200);if(r.pain_perfect)add('痛苦将息 · 无漏',100);if(r.pain_hunt)add('痛苦将息 · 全追猎状态',200);}
@@ -92,7 +92,9 @@ function workbook(records={},policy=C.defaultPolicy){
   const settlementTotal=round(t.members.reduce((sum,id)=>sum+(scores[id].entered?scores[id].settlement:0),0));
   const levelTotal=round(t.members.reduce((sum,id)=>sum+(scores[id].entered?scores[id].teamLevel:0),0));
   const teamBonus=round(levelTotal+firstBonus);
-  return {...t,total:round(settlementTotal+teamBonus),settlementTotal,levelTotal,teamBonus,firstBonus,entered};
+  const withdrawals=t.members.map(id=>({id,withdrawn:number(records[id]?.withdrawn),bonus:number(records[id]?.swaddles)*5}));
+  const depositUsed=withdrawals.reduce((sum,r)=>sum+r.withdrawn,0),depositBonus=withdrawals.reduce((sum,r)=>sum+r.bonus,0),depositRemaining=200+depositBonus-depositUsed;
+  return {...t,withdrawals,depositUsed,depositBonus,depositRemaining,total:round(settlementTotal+teamBonus),settlementTotal,levelTotal,teamBonus,firstBonus,entered};
  });return {scores,teams,owners,firstOwners,bossOwners};
 }
 function validate(data){
@@ -102,7 +104,7 @@ function validate(data){
  const policy={...C.defaultPolicy};
  for(const [key,values] of Object.entries({factions:['best','each'],relics:['combined','each'],dPenalty:['after','before'],firstClear:['team','before','after']}))if(!values.includes(importedPolicy[key]))throw Error('裁判口径设置无效：'+key);
  const booleanKeys=['completed','fullHunt','civilBonus','recruitBonus','sand','offerings','peace','peace_perfect','pain','pain_perfect','pain_hunt','chaos','chaos_perfect','disease','disease_perfect','disease_kill','disease_hunt','disease_trigger','coexist','coexist_black','coexist_hunt','coexist_non6','box','wheel','belly','vine','smallTeam','aveAll','seesAll',...C.hunts.map(x=>'hunt_'+x[0])];
- const numericKeys=['base','parts','penalty','violations','temp6','temp5','temp4','animals','operatorCount',...C.factions.map((x,i)=>'faction_'+i)];
+ const numericKeys=['withdrawn','swaddles','base','parts','penalty','violations','temp6','temp5','temp4','animals','operatorCount',...C.factions.map((x,i)=>'faction_'+i)];
  const records={};
  for(const [id,r]of Object.entries(data.records)){
   const p=C.players.find(x=>x.id===id);if(!p)throw Error('未知选手编号：'+id);

@@ -53,4 +53,14 @@ test('special bonuses multiply personally; section six remains raw and penalties
  const s=S.calculate(p('teddy'),r('teddy',{base:1000,parts:4,completed:true,fullHunt:true,sand:true,offerings:true,box:true,coexist:true,penalty:100}));
  assert.equal(s.extra,450);assert.equal(s.multiplier,1.15);assert.equal(s.settlement,1533);assert.equal(s.teamLevel,140);assert.equal(s.total,1673);
 });
+test('deposits update before scoring, remain team isolated and include earned deposits',()=>{
+ const w=S.workbook({duck:r('duck',{withdrawn:70,swaddles:1}),bridge:r('bridge',{withdrawn:50}),mumu:r('mumu',{withdrawn:20})});
+ const t=w.teams.find(t=>t.id==='duck');assert.equal(t.depositRemaining,85);assert.equal(t.depositUsed,120);assert.equal(t.depositBonus,5);assert.equal(t.entered,0);assert.equal(t.total,0);assert.equal(w.teams.find(t=>t.id==='teddy').depositRemaining,180);
+});
+test('deposit defaults, correction, overdraw and validated persistence',()=>{
+ assert.equal(S.workbook().teams[0].depositRemaining,200);
+ const data=S.validate({schemaVersion:1,records:{duck:{withdrawn:210,swaddles:0}}});assert.equal(S.workbook(data.records).teams[0].depositRemaining,-10);
+ data.records.duck.withdrawn=30;assert.equal(S.workbook(data.records).teams[0].depositRemaining,170);
+ for(const value of [-1,1.5,null,'bad'])assert.throws(()=>S.validate({schemaVersion:1,records:{duck:{withdrawn:value}}}));
+});
 console.log(`${count} scoring tests passed.`);
