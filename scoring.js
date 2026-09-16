@@ -4,7 +4,7 @@ const C=root.CUP;
 const number=(x)=>Number.isFinite(Number(x))?Number(x):0;
 function fresh(p){return {base:'',parts:0,squad:({多边贸易:'trade',术特:'destruction',狙医:'ranged',近锋:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
 function calculate(p,r={},context={}){
- const policy={...C.defaultPolicy,...context.policy},lines=[],warnings=[];
+ const lines=[],warnings=[];
  let raw=number(r.base),extra=0,level=0,penalty=number(r.penalty),multiplier=1;
  const add=(label,value,kind='rule')=>{if(value){lines.push({label,value,kind}); if(kind==='base')extra+=value;else level+=value;}};
  const claim=(key,label,value)=>{
@@ -22,8 +22,7 @@ function calculate(p,r={},context={}){
    add('六星临时招募',number(r.temp6)*40);add('五星临时招募',number(r.temp5)*15);add('四星临时招募',number(r.temp4)*5);
    add('鸭 / 狗 / 熊 / 鼠',number(r.animals)*20);
    const factionBonuses=C.factions.map((name,i)=>{let n=number(r['faction_'+i]),v=n>=3?400:0;if(name==='Ave Mujica'&&r.aveAll&&n>=5)v=600;if(name==='S.E.E.S.'&&r.seesAll&&n>=4)v=600;return {name,v};}).filter(x=>x.v);
-   if(policy.factions==='each')factionBonuses.forEach(x=>add('阵营 · '+x.name,x.v));
-   else if(factionBonuses.length){const best=factionBonuses.sort((a,b)=>b.v-a.v)[0];add('阵营 · '+best.name+'（取最高）',best.v);}
+   factionBonuses.forEach(x=>add('阵营 · '+x.name,x.v));
    if(r.smallTeam&&r.completed){const n=number(r.operatorCount);if(n>=1&&n<=5)add('少人通关 · '+n+' 名干员',(6-n)*120);else warnings.push('少人奖励需结算干员数为 1–5，当前未计分。');}
    if(r.smallTeam&&!r.completed)warnings.push('少人奖励需完成任意结局，当前未计分。');
  }else{
@@ -46,28 +45,23 @@ function calculate(p,r={},context={}){
    for(const s of C.specials){const n=number(r['special_'+s.key]);if(s.levels[n])claim('special_'+s.key,s.name+' · '+n+'层',s.levels[n]);}
    if(r.coexist){add('紧急同域共存',70);if(r.coexist_black)add('同域共存 · 黑流地脉',70);if(r.coexist_hunt)add('同域共存 · 全追猎状态',50);if(r.coexist_non6)add('同域共存 · 非6层',20);if(r.coexist_black&&r.coexist_hunt)add('黑流地脉 × 全追猎额外奖励',150);}
    if(r.box)add('箱中猎影',70,'base');
-   const relicCount=Number(!!r.wheel)+Number(!!r.belly);
-   if(relicCount)add('复得之轮 / 果腹限制奖励',200*(policy.relics==='each'?relicCount:1),'base');
+   if(r.wheel)add('复得之轮限制奖励',200,'base');
+   if(r.belly)add('果腹限制奖励',200,'base');
    if(r.vine)add('板藤限制奖励',200,'base');
-   for(const [key,name] of [['pain','痛苦将息'],['chaos','混沌源阶理论']]){
-    const owner=context.firstOwners?.[p.team+':'+key];
-    if(r[key]&&owner===p.id&&policy.firstClear!=='team')add('队内首次 · '+name,100,policy.firstClear==='before'?'base':'after');
-   }
-   const violation=p.pressure?number(r.violations)*1000:0;
-   if(violation&&policy.dPenalty==='before'){extra-=violation;lines.push({label:'D 类违规 · 倍率前扣分',value:-violation,kind:'base'});}
-   else penalty+=violation;
+   penalty+=p.pressure?number(r.violations)*1000:0;
  }
  const adjustment=number(r.adjust);
  if(adjustment&&!String(r.adjustReason||'').trim())warnings.push('裁判调整未填写理由，尚未计入。');
  const manual=String(r.adjustReason||'').trim()?adjustment:0;
- let afterBonus=0;
- // A first-clear award may be placed after the multiplier by the referee policy.
- for(const l of lines)if(l.kind==='after'){level-=l.value;afterBonus+=l.value;}
+ const afterBonus=0,round=x=>Math.round((x+Number.EPSILON)*100)/100;
  const parts=p.track==='competitive'?number(r.parts)*7.5:0;
  const baseSubtotal=raw+extra-parts;
- const total=p.track==='fun'?raw*.8+level-penalty+manual:(baseSubtotal+level)*multiplier-penalty+manual+afterBonus;
+ // Settlement and team-level contribution are disjoint, rounded ledger entries.
+ const settlement=round(p.track==='fun'?raw*.8+level-penalty+manual:baseSubtotal*multiplier-penalty+manual);
+ const teamLevel=p.track==='competitive'?round(level*multiplier):0;
+ const total=round(settlement+teamLevel);
  const isEntered=r.base!==''&&r.base!==null&&r.base!==undefined;
- return {total:Math.round((total+Number.EPSILON)*100)/100,raw,extra,parts,level,multiplier:Math.round(multiplier*100)/100,penalty,manual,afterBonus,lines,warnings,entered:isEntered};
+ return {total,settlement,teamLevel,raw,extra,parts,level,multiplier:Math.round(multiplier*100)/100,penalty,manual,afterBonus,lines,warnings,entered:isEntered};
 }
 function workbook(records={},policy=C.defaultPolicy){
  const owners={},firstOwners={};
@@ -78,15 +72,21 @@ function workbook(records={},policy=C.defaultPolicy){
  }
  const scores={};for(const p of C.players)scores[p.id]=calculate(p,records[p.id]||{}, {owners,firstOwners,policy});
  const teams=C.teams.map(t=>{
-  let firstBonus=policy.firstClear==='team'?['pain','chaos'].filter(k=>firstOwners[t.id+':'+k]).length*100:0;
+  const firstBonus=['pain','chaos'].filter(k=>firstOwners[t.id+':'+k]).length*100;
   let entered=t.members.filter(id=>scores[id].entered).length;
-  return {...t,total:Math.round((t.members.reduce((sum,id)=>sum+(scores[id].entered?scores[id].total:0),0)+firstBonus)*100)/100,firstBonus,entered};
+  const round=x=>Math.round((x+Number.EPSILON)*100)/100;
+  const settlementTotal=round(t.members.reduce((sum,id)=>sum+(scores[id].entered?scores[id].settlement:0),0));
+  const levelTotal=round(t.members.reduce((sum,id)=>sum+(scores[id].entered?scores[id].teamLevel:0),0));
+  const teamBonus=round(levelTotal+firstBonus);
+  return {...t,total:round(settlementTotal+teamBonus),settlementTotal,levelTotal,teamBonus,firstBonus,entered};
  });return {scores,teams,owners,firstOwners};
 }
 function validate(data){
  if(!data||data.schemaVersion!==1||!data.records||typeof data.records!=='object'||Array.isArray(data.records))throw Error('不是上外杯 #3 的有效计分文件（需要 schemaVersion: 1 与 records）。');
- const policy={...C.defaultPolicy,...data.policy};
- for(const [key,values] of Object.entries({factions:['best','each'],relics:['combined','each'],dPenalty:['after','before'],firstClear:['team','before','after']}))if(!values.includes(policy[key]))throw Error('裁判口径设置无效：'+key);
+ const importedPolicy={...C.defaultPolicy,...data.policy};
+ // Existing saves retain their records but always adopt the confirmed rules.
+ const policy={...C.defaultPolicy};
+ for(const [key,values] of Object.entries({factions:['best','each'],relics:['combined','each'],dPenalty:['after','before'],firstClear:['team','before','after']}))if(!values.includes(importedPolicy[key]))throw Error('裁判口径设置无效：'+key);
  const booleanKeys=['completed','fullHunt','civilBonus','recruitBonus','sand','offerings','peace','peace_perfect','pain','pain_perfect','pain_hunt','chaos','chaos_perfect','disease','disease_perfect','disease_kill','disease_hunt','disease_trigger','coexist','coexist_black','coexist_hunt','coexist_non6','box','wheel','belly','vine','smallTeam','aveAll','seesAll',...C.hunts.map(x=>'hunt_'+x[0])];
  const numericKeys=['base','parts','penalty','violations','temp6','temp5','temp4','animals','operatorCount',...C.factions.map((x,i)=>'faction_'+i)];
  const records={};

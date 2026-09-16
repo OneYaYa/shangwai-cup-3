@@ -16,11 +16,19 @@ const {chromium}=require('playwright');
  const work=await context.newPage();await work.goto(url+'/workbench.html#fun');await work.waitForSelector('#f-base');await work.locator('#f-base').fill('1000');await work.locator('[name="hunt_fang"]').check();
  await page.locator('[data-day="2026-09-19"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="lan"] .match-score strong').textContent==='820');
  await work.goto(url+'/workbench.html#competitive');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
- await page.locator('[data-day="2026-09-20"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="mumu"] .match-score strong').textContent==='1,200');
+ await page.locator('[data-day="2026-09-20"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="mumu"] .match-score strong').textContent==='1,000');
  await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='1,300');
  await work.locator('#player-select').selectOption('cheng');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
  await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='2,500');
- console.log('PASS merged schedule, rule tabs, entertainment/competitive cross-tab updates, team first-clear deduplication');
+ await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-addition strong').textContent==='500');
+ assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').first().locator('strong').innerText(),'2,000');
+ assert.equal(await page.locator('[data-result-player="mumu"] .team-addition strong').innerText(),'500');
+ assert.equal(await work.locator('[data-summary="settlement"]').innerText(),'1,000');
+ assert.equal(await work.locator('[data-summary="team-level"]').innerText(),'200');
+ assert.equal(await work.locator('[data-summary="team-bonus"]').innerText(),'500');
+ assert.equal(await work.locator('[data-policy]').count(),0);
+ assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').evaluateAll(nodes=>getComputedStyle(nodes[0].querySelector('strong')).fontSize===getComputedStyle(nodes[1].querySelector('strong')).fontSize),true);
+ console.log('PASS split settlement/team displays, same visual weight, cross-tab updates and no duplicated first-clear bonuses');
  // Verify independent avatar file and image loading.
  assert.equal(await page.locator('[data-result-team="teddy"] .team-members .avatar').first().getAttribute('src'),'assets/avatars/mumu.jpg');assert(await page.locator('img.avatar').evaluateAll(images=>images.every(i=>i.complete&&i.naturalWidth>0)));
  if(process.env.QA_DIR){await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:process.env.QA_DIR+'/event-desktop.png',fullPage:true});await work.screenshot({path:process.env.QA_DIR+'/workbench-desktop.png',fullPage:true});}
