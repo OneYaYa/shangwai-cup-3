@@ -61,6 +61,7 @@ function calculate(p,r={},context={}){
  if(adjustment&&!String(r.adjustReason||'').trim())warnings.push('裁判调整未填写理由，尚未计入。');
  const manual=String(r.adjustReason||'').trim()?adjustment:0;
  let afterBonus=0;
+ // A first-clear award may be placed after the multiplier by the referee policy.
  for(const l of lines)if(l.kind==='after'){level-=l.value;afterBonus+=l.value;}
  const parts=p.track==='competitive'?number(r.parts)*7.5:0;
  const baseSubtotal=raw+extra-parts;
