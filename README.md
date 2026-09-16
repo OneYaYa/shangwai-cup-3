@@ -1,6 +1,6 @@
 # 上外杯 #3
 
-静态赛事站点，发布于 `https://oneyaya.github.io/shangwai-cup-3/`。
+静态赛事站点，发布于 [https://oneyaya.github.io/shangwai-cup-3/](https://oneyaya.github.io/shangwai-cup-3/)。
 
 ## 页面
 
