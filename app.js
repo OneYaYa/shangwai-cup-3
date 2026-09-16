@@ -8,7 +8,7 @@ function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';cl
 function persist(){local.updatedAt=new Date().toISOString();try{localStorage.setItem(KEY,JSON.stringify(local));localStorage.setItem(KEY+'-preview','1');storageMessage='已保存到此浏览器 · '+new Date().toLocaleTimeString('zh-CN');}catch(e){storageMessage='浏览器未能保存，请导出 JSON 备份。';}const x=$('.status-save');if(x)x.textContent=storageMessage;}
 function player(id){return C.players.find(x=>x.id===id);}
 function pAvatar(p){return `<img class="avatar" src="assets/avatars/${esc(p.id)}.jpg" alt="${esc(p.name)}头像" width="50" height="50" decoding="async">`;}
-function pIdentity(p){return `<div class="player">${pAvatar(p)}<div><strong>${esc(p.name)} ${p.pressure?'<span class="pill purple">抗压位</span>':''}</strong><small>${p.difficulty} · ${esc(p.squad)}分队</small></div></div>`;}
+function pIdentity(p){return `<div class="player">${pAvatar(p)}<div><strong>${esc(p.name)} ${p.pressure?'<span class="pill purple">抗压位</span>':''}</strong><small>${p.difficulty} · ${esc(p.squad.endsWith('分队')?p.squad:p.squad+'分队')}</small></div></div>`;}
 const isWorkbench=document.body.dataset.page==='workbench';
 let rulesTrack='fun';
 function route(){const [raw,sub]=location.hash.slice(1).split('/');if(isWorkbench)return {track:raw==='fun'?'fun':'competitive',page:'calculator'};return {track:raw==='fun'?'fun':'competitive',page:'home'};}
