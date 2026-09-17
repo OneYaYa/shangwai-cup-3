@@ -1,7 +1,7 @@
 'use strict';
 window.CUP = {
   title:'上外杯 #3', timezone:'Asia/Shanghai',
-  teams:[{id:'duck',name:'多边卖鸭分队',members:['duck','bridge','narrative']},{id:'teddy',name:'我泰迪熊豪了',members:['mumu','cheng','teddy']}],
+  teams:[{id:'duck',name:'多边卖鸭分队',members:['duck','bridge','narrative']},{id:'teddy',name:'cornhub',members:['mumu','cheng','teddy']}],
   players:[
     {id:'lan',name:'暴力铃兰',track:'fun',squad:'本源研修分队',difficulty:'N15',date:'2026-09-19',time:'14:00',row:0},
     {id:'wolf',name:'蕉太狼',track:'fun',squad:'破坏战术分队',difficulty:'N15',date:'2026-09-19',time:'19:30',row:1},
