@@ -33,18 +33,16 @@ const {chromium}=require('playwright');
  assert.equal(await work.locator('[data-summary="team-level"]').innerText(),'500');
  assert.equal(await work.locator('[data-summary="team-bonus"]').innerText(),'600');
  await work.locator('#f-restartCount').fill('1');await work.locator('#f-callCount').fill('2');await work.locator('[name="overdraftUsed"]').check();
- await work.locator('[data-workbench-view="team"]').click();assert.equal(await work.locator('.team-data-selector button').count(),2);await work.locator('[data-team-select="teddy"]').click();
- assert.equal(await work.locator('.team-data-title h2').innerText(),'我泰迪熊豪了');assert.equal(await work.locator('.team-data-stats>div').count(),7);assert((await work.locator('.team-data-stats').innerText()).includes('2/3'));assert((await work.locator('.team-data').innerText()).includes('痛苦将息'));assert((await work.locator('.team-data').innerText()).includes('+500'));assert((await work.locator('.team-data').innerText()).includes('135'));
- if(process.env.QA_DIR)await work.screenshot({path:process.env.QA_DIR+'/team-data-desktop.png',fullPage:true});
- await work.locator('[data-edit-player="cheng"]').click();
  assert.equal(await work.locator('[data-policy]').count(),0);
  assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').evaluateAll(nodes=>getComputedStyle(nodes[0].querySelector('strong')).fontSize===getComputedStyle(nodes[1].querySelector('strong')).fontSize),true);
+ assert.equal(await page.locator('.team-data-open').count(),2);await page.locator('[data-result-team="teddy"] .team-data-open').click();await page.waitForSelector('#public-team-data');assert.equal(await page.locator('#public-team-data .team-data-title h2').innerText(),'我泰迪熊豪了');assert((await page.locator('#public-team-data').innerText()).includes('+500'));assert((await page.locator('#public-team-data').innerText()).includes('135'));await page.locator('#public-team-data [data-public-team]').click();assert.equal(await page.locator('#public-team-data').count(),0);
+
  console.log('PASS split settlement/team displays, same visual weight, cross-tab updates and no duplicated first-clear bonuses');
  // Verify independent avatar file and image loading.
  assert.equal(await page.locator('[data-result-team="teddy"] .team-members .avatar').first().getAttribute('src'),'assets/avatars/mumu.jpg');assert(await page.locator('img.avatar').evaluateAll(images=>images.every(i=>i.complete&&i.naturalWidth>0)));
  if(process.env.QA_DIR){await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:process.env.QA_DIR+'/event-desktop.png',fullPage:true});await work.screenshot({path:process.env.QA_DIR+'/workbench-desktop.png',fullPage:true});}
- await page.setViewportSize({width:390,height:844});await page.goto(url+'/#teams');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));if(process.env.QA_DIR){await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:process.env.QA_DIR+'/event-mobile.png',fullPage:true});}
- await work.setViewportSize({width:390,height:844});await work.locator('[data-workbench-view="team"]').click();assert(await work.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.equal(await work.locator('.team-data-stats>div').count(),7);await work.locator('[data-workbench-view="player"]').click();
+ await page.setViewportSize({width:390,height:844});await page.goto(url+'/#teams');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('[data-result-team="teddy"] .team-data-open').click();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));if(process.env.QA_DIR){await page.screenshot({path:process.env.QA_DIR+'/public-team-mobile.png',fullPage:true});await page.locator('#public-team-data [data-public-team]').click();await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:process.env.QA_DIR+'/event-mobile.png',fullPage:true});}
+ await work.setViewportSize({width:390,height:844});assert(await work.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.equal(await work.locator('.workbench-view-tabs').count(),0);
  console.log('PASS desktop/mobile layout and avatar coordinates');
  // Mock GitHub only: no real credentials and no production score writes.
  const fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'results.json')));let writes=0,published;
@@ -54,7 +52,7 @@ const {chromium}=require('playwright');
  // Repeated publication against changed remote must refuse to overwrite.
  await work.locator('#publish-token').fill('mock-test-token');await work.locator('#publish-results').click();await work.waitForFunction(()=>document.querySelector('#publish-status').textContent.includes('线上成绩已有更新'));assert.equal(writes,1);
  console.log('PASS publication payload, UTF-8, token clearing and remote conflict protection');
- const publicContext=await browser.newContext();const publicPage=await publicContext.newPage();await publicPage.goto(url);assert.equal(await publicPage.locator('.draft-badge').count(),0);assert.equal(await publicPage.locator('[data-result-player="lan"] .match-score strong').innerText(),'—');await publicContext.close();
+ const publicContext=await browser.newContext();const publicPage=await publicContext.newPage();await publicPage.goto(url);assert.equal(await publicPage.locator('.draft-badge').count(),0);assert.equal(await publicPage.locator('[data-result-player="lan"] .match-score strong').innerText(),'—');assert.equal(await publicPage.locator('.team-data-open').count(),2);await publicPage.locator('.team-data-open').first().click();assert.equal(await publicPage.locator('#public-team-data').count(),1);await publicContext.close();
  assert.deepEqual(errors,[]);console.log('PASS no browser errors, missing assets or draft leakage to visitors');
  }finally{if(browser)await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

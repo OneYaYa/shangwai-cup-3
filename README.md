@@ -7,7 +7,7 @@
 - `index.html#schedule`：按日期合并娱乐与竞技赛程，显示个人成绩。
 - `index.html#teams`：两支竞技队伍、成员成绩与团队总分。
 - `index.html#rules`：娱乐 / 竞技规则切换，提供三份原始 DOCX 下载。
-- `workbench.html#fun`、`workbench.html#competitive`：独立记分工作台；竞技工作台含选手明细与团队数据视图。
+- `workbench.html#fun`、`workbench.html#competitive`：独立记分工作台；竞技工作台含选手明细与团队数据视图；主页分队卡片可展开公开团队数据。
 
 纯静态站点，无构建依赖，兼容 GitHub Pages 子目录部署。
 
