@@ -63,4 +63,9 @@ test('deposit defaults, correction, overdraw and validated persistence',()=>{
  data.records.duck.withdrawn=30;assert.equal(S.workbook(data.records).teams[0].depositRemaining,170);
  for(const value of [-1,1.5,null,'bad'])assert.throws(()=>S.validate({schemaVersion:1,records:{duck:{withdrawn:value}}}));
 });
+test('team resource fields persist with per-player limits',()=>{
+ const data=S.validate({schemaVersion:1,records:{duck:{restartCount:1,callCount:2,overdraftUsed:true}}});
+ assert.equal(data.records.duck.restartCount,1);assert.equal(data.records.duck.callCount,2);assert.equal(data.records.duck.overdraftUsed,true);
+ assert.throws(()=>S.validate({schemaVersion:1,records:{duck:{restartCount:2}}}));assert.throws(()=>S.validate({schemaVersion:1,records:{duck:{callCount:4}}}));
+});
 console.log(`${count} scoring tests passed.`);

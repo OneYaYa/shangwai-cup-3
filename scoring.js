@@ -2,7 +2,7 @@
 (function(root){
 const C=root.CUP;
 const number=(x)=>Number.isFinite(Number(x))?Number(x):0;
-function fresh(p){return {base:'',withdrawn:0,swaddles:0,parts:0,squad:({多边贸易:'trade',破坏战术分队:'destruction',远程战术分队:'ranged',突击战术分队:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
+function fresh(p){return {base:'',withdrawn:0,swaddles:0,restartCount:0,callCount:0,overdraftUsed:false,parts:0,squad:({多边贸易:'trade',破坏战术分队:'destruction',远程战术分队:'ranged',突击战术分队:'assault'})[p.squad]||'other',mechanic:'none',adjust:0,adjustReason:'',notes:'',penalty:0,violations:0,completed:false};}
 function bossLines(r,key){
  const out=[],add=(label,value)=>out.push({label,value});
  if(key==='pain'&&r.pain){add('痛苦将息',200);if(r.pain_perfect)add('痛苦将息 · 无漏',100);if(r.pain_hunt)add('痛苦将息 · 全追猎状态',200);}
@@ -103,8 +103,8 @@ function validate(data){
  // Existing saves retain their records but always adopt the confirmed rules.
  const policy={...C.defaultPolicy};
  for(const [key,values] of Object.entries({factions:['best','each'],relics:['combined','each'],dPenalty:['after','before'],firstClear:['team','before','after']}))if(!values.includes(importedPolicy[key]))throw Error('裁判口径设置无效：'+key);
- const booleanKeys=['completed','fullHunt','civilBonus','recruitBonus','sand','offerings','peace','peace_perfect','pain','pain_perfect','pain_hunt','chaos','chaos_perfect','disease','disease_perfect','disease_kill','disease_hunt','disease_trigger','coexist','coexist_black','coexist_hunt','coexist_non6','box','wheel','belly','vine','smallTeam','aveAll','seesAll',...C.hunts.map(x=>'hunt_'+x[0])];
- const numericKeys=['withdrawn','swaddles','base','parts','penalty','violations','temp6','temp5','temp4','animals','operatorCount',...C.factions.map((x,i)=>'faction_'+i)];
+ const booleanKeys=['completed','fullHunt','civilBonus','recruitBonus','sand','offerings','peace','peace_perfect','pain','pain_perfect','pain_hunt','chaos','chaos_perfect','disease','disease_perfect','disease_kill','disease_hunt','disease_trigger','coexist','coexist_black','coexist_hunt','coexist_non6','box','overdraftUsed','wheel','belly','vine','smallTeam','aveAll','seesAll',...C.hunts.map(x=>'hunt_'+x[0])];
+ const numericKeys=['withdrawn','swaddles','restartCount','callCount','base','parts','penalty','violations','temp6','temp5','temp4','animals','operatorCount',...C.factions.map((x,i)=>'faction_'+i)];
  const records={};
  for(const [id,r]of Object.entries(data.records)){
   const p=C.players.find(x=>x.id===id);if(!p)throw Error('未知选手编号：'+id);
@@ -117,6 +117,8 @@ function validate(data){
   if('mechanic'in r){if(!['none','ban','outside','inside'].includes(r.mechanic))throw Error('机械师选项无效');clean.mechanic=r.mechanic;}
   for(const s of C.specials)if('special_'+s.key in r){const n=Number(r['special_'+s.key]);if(n!==0&&!s.levels[n])throw Error('特殊关卡层数无效');clean['special_'+s.key]=n;}
   for(const key of ['adjustReason','notes'])if(key in r){if(typeof r[key]!=='string'||r[key].length>3000)throw Error('备注过长或格式错误');clean[key]=r[key];}
+  if(clean.restartCount>1)throw Error('每位选手最多使用 1 次额外重开');
+  if(clean.callCount>3)throw Error('单名选手记录的连麦次数不能超过团队上限 3 次');
   if(clean.violations>5)throw Error('D 类违规条数应为 0–5');
   if(!p.pressure&&clean.violations>0)throw Error('D 类抗压位违规仅适用于抗压位选手');
   records[id]=clean;
