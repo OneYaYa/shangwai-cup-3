@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-19T08:22:03.084Z",
+  "updatedAt": "2026-09-19T12:12:10.875Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -25,6 +25,25 @@
       "temp5": 2,
       "temp4": 2,
       "animals": 7
+    },
+    "wolf": {
+      "base": 736,
+      "withdrawn": 0,
+      "swaddles": 0,
+      "restartCount": 0,
+      "callCount": 0,
+      "overdraftUsed": false,
+      "parts": 0,
+      "squad": "destruction",
+      "mechanic": "none",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": false,
+      "temp5": 2,
+      "animals": 2
     }
   },
   "policy": {
