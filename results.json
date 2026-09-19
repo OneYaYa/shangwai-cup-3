@@ -1,1 +1,36 @@
-{"schemaVersion":1,"updatedAt":null,"records":{}}
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-19T08:22:03.084Z",
+  "records": {
+    "lan": {
+      "base": 2649,
+      "withdrawn": 0,
+      "swaddles": 0,
+      "restartCount": 0,
+      "callCount": 0,
+      "overdraftUsed": false,
+      "parts": 0,
+      "squad": "other",
+      "mechanic": "none",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": false,
+      "chaos": true,
+      "chaos_perfect": true,
+      "hunt_anger": true,
+      "temp6": 2,
+      "temp5": 2,
+      "temp4": 2,
+      "animals": 7
+    }
+  },
+  "policy": {
+    "factions": "each",
+    "relics": "each",
+    "dPenalty": "after",
+    "firstClear": "team"
+  }
+}
