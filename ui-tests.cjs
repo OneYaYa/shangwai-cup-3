@@ -14,30 +14,26 @@ const {chromium}=require('playwright');
  await page.locator('[data-day="2026-09-20"]').click();assert.equal(await page.locator('.event-match .track-tag').innerText(),'竞技');
  await page.locator('[data-rules-track="competitive"]').click();assert.equal(await page.locator('a[download]').count(),2);await page.locator('[data-rules-track="fun"]').click();
  const work=await context.newPage();await work.goto(url+'/workbench.html#fun');await work.waitForSelector('#f-base');await work.locator('#f-base').fill('1000');await work.locator('[name="hunt_fang"]').check();
- await page.locator('[data-day="2026-09-19"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="lan"] .match-score strong').textContent==='820');
+ await page.locator('[data-day="2026-09-19"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="lan"] .match-score strong').textContent==='2,809.2');
  await work.goto(url+'/workbench.html#competitive');assert.equal(await work.locator('[name="sand"]').count(),1);assert.equal(await work.locator('[name="offerings"]').count(),1);assert.deepEqual(await work.locator('#calculator-form .step').allTextContents(),['01','02','03','04','05','06','07','08']);assert.equal(await work.locator('#f-squad').inputValue(),'destruction');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
- await page.locator('[data-day="2026-09-20"]').click();await page.waitForFunction(()=>document.querySelector('[data-result-player="mumu"] .match-score strong').textContent==='1,000');
- await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='1,300');
+ await page.locator('[data-day="2026-09-20"]').click();assert.equal(await page.locator('[data-result-player="mumu"] .match-score strong').innerText(),'—');
  await work.locator('#f-withdrawn').fill('70');await work.locator('#f-swaddles').fill('1');
- await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] [data-deposit="remaining"]').textContent==='135');
  await work.locator('#player-select').selectOption('cheng');await work.locator('#f-base').fill('1000');await work.locator('[name="pain"]').check();
- await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='2,300');
  await work.locator('[name="pain_perfect"]').check();await work.locator('[name="pain_hunt"]').check();
- await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-score-heading strong').textContent==='2,600');
- await page.waitForFunction(()=>document.querySelector('[data-result-team="teddy"] .team-addition strong').textContent==='600');
- assert((await page.locator('[data-result-team="teddy"] .team-bonus-details').textContent()).includes('缪缪厨一号 · 痛苦将息 · 队内首次通关'));
-
- assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').first().locator('strong').innerText(),'2,000');
- assert.equal(await page.locator('[data-result-player="mumu"] .team-addition strong').innerText(),'600');
  assert.equal(await work.locator('[data-summary="settlement"]').innerText(),'1,000');
  assert.equal(await work.locator('[data-summary="team-level"]').innerText(),'500');
  assert.equal(await work.locator('[data-summary="team-bonus"]').innerText(),'600');
  await work.locator('#f-restartCount').fill('1');await work.locator('#f-callCount').fill('2');await work.locator('[name="overdraftUsed"]').check();
  assert.equal(await work.locator('[data-policy]').count(),0);
+ const publishedPreview=await work.evaluate(()=>JSON.parse(localStorage.getItem('shangwai-cup-3-v1')));await page.route('**/results.json*',route=>route.fulfill({json:publishedPreview}));await page.reload();await page.waitForSelector('[data-result-team="teddy"]');
+ assert.equal(await page.locator('[data-result-player="lan"] .match-score strong').innerText(),'820');await page.locator('[data-day="2026-09-20"]').click();assert.equal(await page.locator('[data-result-player="mumu"] .match-score strong').innerText(),'1,000');
+ assert.equal(await page.locator('[data-result-team="teddy"] .team-score-heading strong').innerText(),'2,600');assert.equal(await page.locator('[data-result-team="teddy"] .team-addition strong').innerText(),'600');assert.equal(await page.locator('[data-result-team="teddy"] [data-deposit="remaining"]').innerText(),'135');
+ assert((await page.locator('[data-result-team="teddy"] .team-bonus-details').textContent()).includes('缪缪厨一号 · 痛苦将息 · 队内首次通关'));
+ assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').first().locator('strong').innerText(),'2,000');assert.equal(await page.locator('[data-result-player="mumu"] .team-addition strong').innerText(),'600');
  assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').evaluateAll(nodes=>getComputedStyle(nodes[0].querySelector('strong')).fontSize===getComputedStyle(nodes[1].querySelector('strong')).fontSize),true);
  assert.equal(await page.locator('.team-data-open').count(),2);await page.locator('[data-result-team="teddy"] .team-data-open').click();await page.waitForSelector('#public-team-data');assert.equal(await page.locator('#public-team-data .team-data-title h2').innerText(),'cornhub');assert((await page.locator('#public-team-data').innerText()).includes('+500'));assert((await page.locator('#public-team-data').innerText()).includes('135'));await page.locator('#public-team-data [data-public-team]').click();assert.equal(await page.locator('#public-team-data').count(),0);
 
- console.log('PASS split settlement/team displays, same visual weight, cross-tab updates and no duplicated first-clear bonuses');
+ console.log('PASS published settlement/team displays, same visual weight and no duplicated first-clear bonuses');
  // Verify independent avatar file and image loading.
  assert.equal(await page.locator('[data-result-team="teddy"] .team-members .avatar').first().getAttribute('src'),'assets/avatars/mumu.jpg');assert(await page.locator('img.avatar').evaluateAll(images=>images.every(i=>i.complete&&i.naturalWidth>0)));
  if(process.env.QA_DIR){await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:process.env.QA_DIR+'/event-desktop.png',fullPage:true});await work.screenshot({path:process.env.QA_DIR+'/workbench-desktop.png',fullPage:true});}
@@ -52,7 +48,7 @@ const {chromium}=require('playwright');
  // Repeated publication against changed remote must refuse to overwrite.
  await work.locator('#publish-token').fill('mock-test-token');await work.locator('#publish-results').click();await work.waitForFunction(()=>document.querySelector('#publish-status').textContent.includes('线上成绩已有更新'));assert.equal(writes,1);
  console.log('PASS publication payload, UTF-8, token clearing and remote conflict protection');
- const publicContext=await browser.newContext();const publicPage=await publicContext.newPage();await publicPage.goto(url);assert.equal(await publicPage.locator('.draft-badge').count(),0);assert.equal(await publicPage.locator('[data-result-player="lan"] .match-score strong').innerText(),'—');assert.equal(await publicPage.locator('.team-data-open').count(),2);await publicPage.locator('.team-data-open').first().click();assert.equal(await publicPage.locator('#public-team-data').count(),1);await publicContext.close();
- assert.deepEqual(errors,[]);console.log('PASS no browser errors, missing assets or draft leakage to visitors');
+ const publicContext=await browser.newContext();const publicPage=await publicContext.newPage();await publicPage.goto(url);await publicPage.evaluate(()=>{localStorage.setItem('shangwai-cup-3-v1',JSON.stringify({schemaVersion:1,records:{lan:{base:1}},policy:{factions:'each',relics:'each',dPenalty:'after',firstClear:'team'}}));localStorage.setItem('shangwai-cup-3-v1-preview','1');});await publicPage.reload();await publicPage.waitForFunction(()=>document.querySelector('[data-result-player="lan"] .match-score strong').textContent==='2,809.2');assert.equal(await publicPage.locator('.draft-badge').count(),0);assert.equal(await publicPage.locator('.team-data-open').count(),2);await publicPage.locator('.team-data-open').first().click();assert.equal(await publicPage.locator('#public-team-data').count(),1);await publicContext.close();
+ assert.deepEqual(errors,[]);console.log('PASS homepage always uses published results despite stale local preview data');
  }finally{if(browser)await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
