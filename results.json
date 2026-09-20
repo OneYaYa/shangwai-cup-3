@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-19T12:12:10.875Z",
+  "updatedAt": "2026-09-20T14:00:01.254Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -44,6 +44,31 @@
       "completed": false,
       "temp5": 2,
       "animals": 2
+    },
+    "mumu": {
+      "base": 2904,
+      "withdrawn": 10,
+      "swaddles": 1,
+      "restartCount": 0,
+      "callCount": 2,
+      "overdraftUsed": false,
+      "parts": 88,
+      "squad": "destruction",
+      "mechanic": "none",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": true,
+      "fullHunt": false,
+      "recruitBonus": true,
+      "chaos": true,
+      "chaos_perfect": true,
+      "disease": true,
+      "disease_perfect": true,
+      "disease_kill": true,
+      "hunt_music": true
     }
   },
   "policy": {
