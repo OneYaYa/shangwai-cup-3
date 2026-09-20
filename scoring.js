@@ -48,14 +48,10 @@ function calculate(p,r={},context={}){
    if(r.offerings&&r.completed)add('三供无削',300,'base');
    if((r.sand||r.offerings)&&!r.completed)warnings.push('藏品规则分要求通关，当前未计入沙盘 / 三供无削。');
    for(const [key,name,,score] of C.hunts)if(r['hunt_'+key])claim('hunt_'+key,name+' · 无漏',score);
-   for(const key of ['pain','chaos','disease']){
-    const reward=bossLines(r,key),owner=context.bossOwners?.[p.team+':'+key];
-    if(reward.length&&owner&&owner!==p.id)warnings.push(`${reward[0].label}：团队采用 ${C.players.find(x=>x.id===owner)?.name||owner} 的最高完整奖励，本人此项不重复计入。`);
-    else reward.forEach(l=>add(l.label,l.value));
-   }
+   for(const key of ['pain','chaos','disease'])bossLines(r,key).forEach(l=>add(l.label,l.value,'base'));
    for(const s of C.specials){const n=number(r['special_'+s.key]);if(s.levels[n])claim('special_'+s.key,s.name+' · '+n+'层',s.levels[n]);}
    if(r.coexist){add('紧急同域共存',70);if(r.coexist_black)add('同域共存 · 黑流地脉',70);if(r.coexist_hunt)add('同域共存 · 全追猎状态',50);if(r.coexist_non6)add('同域共存 · 非6层',20);if(r.coexist_black&&r.coexist_hunt)add('黑流地脉 × 全追猎额外奖励',150);}
-   if(r.box)add('箱中猎影',70);
+   if(r.box)add('箱中猎影',70,'base');
    if(r.wheel)add('复得之轮限制奖励',200,'base');
    if(r.belly)add('果腹限制奖励',200,'base');
    if(r.vine)add('板藤限制奖励',200,'base');
