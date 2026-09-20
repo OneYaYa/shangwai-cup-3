@@ -118,7 +118,7 @@ function validate(data){
   for(const s of C.specials)if('special_'+s.key in r){const n=Number(r['special_'+s.key]);if(n!==0&&!s.levels[n])throw Error('特殊关卡层数无效');clean['special_'+s.key]=n;}
   for(const key of ['adjustReason','notes'])if(key in r){if(typeof r[key]!=='string'||r[key].length>3000)throw Error('备注过长或格式错误');clean[key]=r[key];}
   if(clean.restartCount>1)throw Error('每位选手最多使用 1 次额外重开');
-  if(clean.callCount>3)throw Error('单名选手记录的连麦次数不能超过团队上限 3 次');
+  if(clean.callCount>3)throw Error('单名选手记录的连麦次数不能超过个人上限 3 次');
   if(clean.violations>5)throw Error('D 类违规条数应为 0–5');
   if(!p.pressure&&clean.violations>0)throw Error('D 类抗压位违规仅适用于抗压位选手');
   records[id]=clean;

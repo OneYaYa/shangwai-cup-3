@@ -23,7 +23,7 @@ const {chromium}=require('playwright');
  assert.equal(await work.locator('[data-summary="settlement"]').innerText(),'1,000');
  assert.equal(await work.locator('[data-summary="team-level"]').innerText(),'500');
  assert.equal(await work.locator('[data-summary="team-bonus"]').innerText(),'600');
- await work.locator('#f-restartCount').fill('1');await work.locator('#f-callCount').fill('2');await work.locator('[name="overdraftUsed"]').check();
+ assert.equal(await work.locator('#f-callCount').getAttribute('max'),'3');await work.locator('#f-restartCount').fill('1');await work.locator('#f-callCount').fill('2');await work.locator('[name="overdraftUsed"]').check();
  assert.equal(await work.locator('[data-policy]').count(),0);
  const publishedPreview=await work.evaluate(()=>JSON.parse(localStorage.getItem('shangwai-cup-3-v1')));await page.route('**/results.json*',route=>route.fulfill({json:publishedPreview}));await page.reload();await page.waitForSelector('[data-result-team="teddy"]');
  assert.equal(await page.locator('[data-result-player="lan"] .match-score strong').innerText(),'820');await page.locator('[data-day="2026-09-20"]').click();assert.equal(await page.locator('[data-result-player="mumu"] .match-score strong').innerText(),'1,000');
@@ -31,7 +31,7 @@ const {chromium}=require('playwright');
  assert((await page.locator('[data-result-team="teddy"] .team-bonus-details').textContent()).includes('缪缪厨一号 · 痛苦将息 · 队内首次通关'));
  assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').first().locator('strong').innerText(),'2,000');assert.equal(await page.locator('[data-result-player="mumu"] .team-addition strong').innerText(),'600');
  assert.equal(await page.locator('[data-result-team="teddy"] .team-score-pair .score-metric').evaluateAll(nodes=>getComputedStyle(nodes[0].querySelector('strong')).fontSize===getComputedStyle(nodes[1].querySelector('strong')).fontSize),true);
- assert.equal(await page.locator('.team-data-open').count(),2);await page.locator('[data-result-team="teddy"] .team-data-open').click();await page.waitForSelector('#public-team-data');assert.equal(await page.locator('#public-team-data .team-data-title h2').innerText(),'cornhub');assert((await page.locator('#public-team-data').innerText()).includes('+500'));assert((await page.locator('#public-team-data').innerText()).includes('135'));await page.locator('#public-team-data [data-public-team]').click();assert.equal(await page.locator('#public-team-data').count(),0);
+ assert.equal(await page.locator('.team-data-open').count(),2);await page.locator('[data-result-team="teddy"] .team-data-open').click();await page.waitForSelector('#public-team-data');assert.equal(await page.locator('#public-team-data .team-data-title h2').innerText(),'cornhub');assert((await page.locator('#public-team-data').innerText()).includes('+500'));assert((await page.locator('#public-team-data').innerText()).includes('135'));assert((await page.locator('#public-team-data').innerText()).includes('2/9'));await page.locator('#public-team-data [data-public-team]').click();assert.equal(await page.locator('#public-team-data').count(),0);
 
  console.log('PASS published settlement/team displays, same visual weight and no duplicated first-clear bonuses');
  // Verify independent avatar file and image loading.
