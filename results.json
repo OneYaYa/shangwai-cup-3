@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-20T14:00:01.254Z",
+  "updatedAt": "2026-09-21T13:27:25.963Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -61,13 +61,14 @@
       "penalty": 0,
       "violations": 0,
       "completed": true,
-      "fullHunt": false,
       "recruitBonus": true,
       "chaos": true,
       "chaos_perfect": true,
       "disease": true,
       "disease_perfect": true,
       "disease_kill": true,
+      "disease_trigger": true,
+      "vine": true,
       "hunt_music": true
     }
   },
