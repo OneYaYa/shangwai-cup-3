@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-22T13:52:42.682Z",
+  "updatedAt": "2026-09-23T14:00:52.844Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -136,6 +136,27 @@
       "faction_7": 3,
       "faction_17": 5,
       "faction_18": 4
+    },
+    "moon": {
+      "base": 1332,
+      "withdrawn": 0,
+      "swaddles": 0,
+      "restartCount": 0,
+      "callCount": 0,
+      "overdraftUsed": false,
+      "parts": 0,
+      "squad": "other",
+      "mechanic": "none",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": true,
+      "peace": true,
+      "peace_perfect": true,
+      "smallTeam": true,
+      "operatorCount": 1
     }
   },
   "policy": {
