@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-25T08:22:07.871Z",
+  "updatedAt": "2026-09-25T08:36:23.230Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -96,7 +96,7 @@
       "disease_kill": true,
       "disease_trigger": true,
       "coexist": true,
-      "vine": false,
+      "vine": true,
       "hunt_gold": true,
       "hunt_music": true,
       "special_meeting": 5,
