@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-23T14:00:52.844Z",
+  "updatedAt": "2026-09-25T08:22:07.871Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -157,6 +157,38 @@
       "peace_perfect": true,
       "smallTeam": true,
       "operatorCount": 1
+    },
+    "cheng": {
+      "base": 3370,
+      "withdrawn": 66,
+      "swaddles": 3,
+      "restartCount": 0,
+      "callCount": 3,
+      "overdraftUsed": false,
+      "parts": 114,
+      "squad": "ranged",
+      "mechanic": "none",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": true,
+      "recruitBonus": true,
+      "sand": true,
+      "offerings": true,
+      "chaos": true,
+      "chaos_perfect": true,
+      "disease": true,
+      "disease_perfect": true,
+      "disease_kill": true,
+      "disease_trigger": true,
+      "wheel": true,
+      "vine": true,
+      "hunt_music": true,
+      "hunt_body": false,
+      "special_lake": 5,
+      "special_autopsy": 4
     }
   },
   "policy": {
