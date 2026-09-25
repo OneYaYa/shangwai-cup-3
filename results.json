@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-25T08:36:23.230Z",
+  "updatedAt": "2026-09-25T12:27:51.300Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -189,6 +189,25 @@
       "hunt_body": false,
       "special_lake": 5,
       "special_autopsy": 4
+    },
+    "bridge": {
+      "base": 771,
+      "withdrawn": 10,
+      "swaddles": 1,
+      "restartCount": 0,
+      "callCount": 0,
+      "overdraftUsed": false,
+      "parts": 30,
+      "squad": "ranged",
+      "mechanic": "none",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": false,
+      "recruitBonus": true,
+      "vine": true
     }
   },
   "policy": {
