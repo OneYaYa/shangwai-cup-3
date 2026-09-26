@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-25T12:27:51.300Z",
+  "updatedAt": "2026-09-26T14:44:24.525Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -208,6 +208,26 @@
       "completed": false,
       "recruitBonus": true,
       "vine": true
+    },
+    "narrative": {
+      "base": 663,
+      "withdrawn": 0,
+      "swaddles": 0,
+      "restartCount": 0,
+      "callCount": 0,
+      "overdraftUsed": true,
+      "parts": 23,
+      "squad": "assault",
+      "mechanic": "ban",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": false,
+      "recruitBonus": true,
+      "vine": true,
+      "hunt_fang": true
     }
   },
   "policy": {
