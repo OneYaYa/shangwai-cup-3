@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-26T14:44:24.525Z",
+  "updatedAt": "2026-09-28T12:45:46.406Z",
   "records": {
     "lan": {
       "base": 2649,
@@ -228,6 +228,25 @@
       "recruitBonus": true,
       "vine": true,
       "hunt_fang": true
+    },
+    "teddy": {
+      "base": 1159,
+      "withdrawn": 0,
+      "swaddles": 0,
+      "restartCount": 0,
+      "callCount": 1,
+      "overdraftUsed": true,
+      "parts": 34,
+      "squad": "trade",
+      "mechanic": "none",
+      "adjust": 0,
+      "adjustReason": "",
+      "notes": "",
+      "penalty": 0,
+      "violations": 0,
+      "completed": false,
+      "recruitBonus": true,
+      "vine": true
     }
   },
   "policy": {
